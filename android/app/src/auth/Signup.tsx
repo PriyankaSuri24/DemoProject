@@ -6,7 +6,7 @@ import { validateEmail } from '../utils/validation';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { styles } from './Signup.styles';
-import { validatePhoneNumber } from '../utils/phoneAPI';
+import { validatePhoneNumber } from '../utils/phoneNumberApi';
 
 export default function Signup (){
         const { login } = useContext(AuthContext);
