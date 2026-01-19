@@ -9,17 +9,46 @@ export const styles = StyleSheet.create({
         marginVertical: 20,
         gap: 12,
     },
-    emailButton: {
-        flex: 1,
-        paddingVertical: 12,
-        borderRadius: 8,
-        backgroundColor: '#d9a8ed',
-        alignItems: 'center',
+    phoneContainer: {
+        flexDirection: 'row', 
+        marginLeft: 20,
+        marginRight: 20
     },
-    emailText: {
-        color: '#fff',
+    selector: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderWidth: 1,
+        borderColor: '#af45d9',
+        borderRadius: 8,
+        backgroundColor: '#fff',
+        flex: 0.4
+    },
+    phoneInput: {
+        flex: 0.4,
+        paddingHorizontal: 12,
+        paddingVertical: 8, 
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#af45d9',
         fontSize: 16,
-        fontWeight: '600',
+    },
+    list: {
+        backgroundColor: '#dbaaef',
+    },
+    countryItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 12,
+        borderBottomWidth: 0.5,
+        borderColor: '#af45d9',
+    },
+    flag: {
+        width: 22, 
+        height: 16, 
+        marginRight: 8 
     },
     phoneButton: {
         flex: 1,

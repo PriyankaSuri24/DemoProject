@@ -1,14 +1,31 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/authContext";
 import { getUsers } from "../storage/userStorage";
-import { Alert, ScrollView, View, Text, Pressable, TextInput } from "react-native";
+import { Alert, ScrollView, View, Text, Pressable, TextInput, Image, Modal, FlatList } from "react-native";
 import React from "react";
 import { styles } from './PhoneLogin.styles';
+import { fetchCountries, Country } from '../api/CallingApi';
 
 export default function PhoneLogin() {
     const { login } = useContext(AuthContext);
-    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
+
+    const [countries, setCountries] = useState<Country[]>([]);
+    const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+    const [phone, setPhone] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+
+    useEffect(() => {
+                const loadCountries = async () => {
+                try {
+                    const data = await fetchCountries();
+                    setCountries(data);
+                    setSelectedCountry(data.find(c => c.code === 'IN') || data[0]);
+                } catch (error) {
+                    console.error(error);
+                }};
+                loadCountries();
+    }, []);
 
     const handleLogin = async () => {
         const users = await getUsers();
@@ -22,13 +39,43 @@ export default function PhoneLogin() {
     return (
         <ScrollView style={styles.view}>
             <View style={styles.container}>
-                <TextInput
-                    placeholder="Phone Number"
-                    value={phone}
-                    onChangeText={setPhone}
-                    keyboardType="phone-pad"
-                    style={styles.input}
-                />
+                <View style={styles.phoneContainer}>
+                    <Pressable style={styles.selector} onPress={() => setModalVisible(true)}>
+                        {selectedCountry && (
+                        <>
+                            <Image source={{ uri: selectedCountry.flag }} style={styles.flag} />
+                            <Text>{selectedCountry.name} ({selectedCountry.dialCode})</Text>
+                        </>
+                        )}
+                    </Pressable>
+                    <TextInput
+                        // eslint-disable-next-line no-sparse-arrays, react-native/no-inline-styles
+                        style={[styles.phoneInput, , { flex: 0.6, marginLeft: 8 }]}
+                        keyboardType="phone-pad"
+                        placeholder="Enter phone number"
+                        value={phone}
+                        onChangeText={setPhone}
+                    />
+                    <Modal visible={modalVisible} animationType="slide">
+                        <FlatList
+                            data={countries}
+                            keyExtractor={(item) => item.code}
+                            style={styles.list}
+                            renderItem={({ item }) => (
+                                <Pressable
+                                    style={styles.countryItem}
+                                    onPress={() => {
+                                        setSelectedCountry(item);
+                                        setModalVisible(false);
+                                    }}
+                                >
+                                    <Image source={{ uri: item.flag }} style={styles.flag} />
+                                    <Text>{item.name} ({item.dialCode})</Text>
+                                </Pressable>
+                            )}
+                        />
+                    </Modal>
+                </View>
                 <TextInput
                     placeholder="Password"
                     value={password}
