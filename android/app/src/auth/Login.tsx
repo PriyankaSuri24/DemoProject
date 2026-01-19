@@ -10,7 +10,7 @@ export default function Login() {
         <Tab.Navigator
             screenOptions={{
                 tabBarLabelStyle: { fontSize: 16, fontWeight: 'bold' },
-                tabBarIndicatorStyle: { backgroundColor: '#007AFF', height: 3 },
+                tabBarIndicatorStyle: { backgroundColor: '#af45d9', height: 3 },
             }}
         >
             <Tab.Screen name="Email" component={EmailLogin} />
