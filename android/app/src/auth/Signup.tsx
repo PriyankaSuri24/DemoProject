@@ -4,8 +4,9 @@ import React, { useContext, useState } from 'react';
 import { getUsers, saveUser } from '../storage/userStorage';
 import { validateEmail } from '../utils/validation';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { styles } from './Signup.styles';
+import { validatePassword } from '../utils/passwordValidation';
 
 export default function Signup (){
         const { login } = useContext(AuthContext);
@@ -25,6 +26,11 @@ export default function Signup (){
             }
             if (!password || !confirmPassword){
                 return Alert.alert('Error', 'Both password and confirm password required.');
+            }
+
+            const {isValid, errors} = validatePassword(password);
+            if(!isValid){
+                return Alert.alert('Weak Password', errors.join('\n'));
             }
 
             if(!(phone?.length || email?.length)) {
@@ -99,7 +105,7 @@ export default function Signup (){
                 />
                 <Pressable onPress={() => setShowPassword(!showPassword)}>
                     <Icon
-                    name={showPassword ? 'eye' : 'eye-slash'}
+                    name={showPassword ? 'eye-sharp' : 'eye-off-sharp'}
                     size={22}
                     color="#af45d9"
                 />
@@ -115,7 +121,7 @@ export default function Signup (){
                 />
                 <Pressable onPress={() => setShowPassword(!showPassword)}>
                     <Icon
-                    name={showPassword ? 'eye' : 'eye-slash'}
+                    name={showPassword ? 'eye-sharp' : 'eye-off-sharp'}
                     size={22}
                     color="#af45d9"
                 />
