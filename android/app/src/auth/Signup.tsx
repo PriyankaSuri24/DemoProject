@@ -6,7 +6,6 @@ import { validateEmail } from '../utils/validation';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { styles } from './Signup.styles';
-import { validatePhoneNumber } from '../utils/phoneNumberApi';
 
 export default function Signup (){
         const { login } = useContext(AuthContext);
@@ -36,14 +35,6 @@ export default function Signup (){
             }
             if(password !== confirmPassword) {
                 return Alert.alert('Error', 'Passwords do not match.');
-            }
-
-            let isValidPhone = true;
-            if(phone?.length){
-                isValidPhone = await validatePhoneNumber(phone);
-                if (!isValidPhone) {
-                    return Alert.alert('Error', 'Phone number is invalid according to API.');
-                }
             }
 
             const users  = await getUsers();  
