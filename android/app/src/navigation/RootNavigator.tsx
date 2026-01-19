@@ -11,7 +11,7 @@ export default function RootNavigator() {
     if (loading) {
         return (
             <View style={styles.container}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#af45d9" />
             </View>
         );
     }
