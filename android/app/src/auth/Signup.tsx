@@ -117,7 +117,7 @@ export default function Signup (){
                 </Pressable>
                 <TextInput
                     // eslint-disable-next-line no-sparse-arrays, react-native/no-inline-styles
-                    style={[styles.phoneInput, , { flex: 0.6, marginLeft: 8 }]}
+                    style={[styles.input, , { flex: 0.6, marginLeft: 8 }]}
                     keyboardType="phone-pad"
                     placeholder="Enter phone number"
                     value={phone}
@@ -142,7 +142,7 @@ export default function Signup (){
                         )}
                     />
                 </Modal>
-                </View>
+            </View>
             <View style={styles.passwordContainer}>
                 <TextInput
                     placeholder="Password"
