@@ -20,6 +20,48 @@ export const styles = StyleSheet.create ({
         marginTop: 20,
         gap: 12,
     },
+    selector: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderWidth: 1,
+        borderColor: '#af45d9',
+        borderRadius: 8,
+        backgroundColor: '#fff',
+        flex: 0.4
+    },
+    phoneInput: {
+        flex: 0.4,
+        paddingHorizontal: 12,
+        paddingVertical: 8, 
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#af45d9',
+        fontSize: 16,
+    },
+    phoneContainer: { 
+        flexDirection: 'row', 
+    },
+    flag: {
+        width: 22, 
+        height: 16, 
+        marginRight: 8 
+    },
+    list:{
+        backgroundColor: '#dbaaef',
+    },
+    countryItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 12,
+        borderBottomWidth: 0.5,
+        borderColor: '#af45d9',
+    },
+    countrySelect:{
+        maxHeight: 150
+    },
     passwordContainer: {
         flexDirection: 'row',
         alignItems: 'center',

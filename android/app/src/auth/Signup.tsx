@@ -1,12 +1,13 @@
-import {  Alert, Text, ScrollView, TextInput, Pressable, View } from 'react-native';
+import {  Alert, Text, ScrollView, TextInput, Pressable, View, Image, Modal, FlatList } from 'react-native';
 import { AuthContext } from '../context/authContext';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { getUsers, saveUser } from '../storage/userStorage';
 import { validateEmail } from '../utils/validation';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { styles } from './Signup.styles';
 import { validatePassword } from '../utils/passwordValidation';
+import { fetchCountries, Country } from '../api/CallingApi';
 
 export default function Signup (){
         const { login } = useContext(AuthContext);
@@ -15,10 +16,26 @@ export default function Signup (){
         const [firstName, setFirstName] = useState('');
         const [lastName, setLastName] = useState('');
         const [email, setEmail] = useState('');
-        const [phone, setPhone] = useState('');
         const [password, setPassword] = useState('');
         const [confirmPassword, setConfirmPassword] = useState('');
         const [showPassword, setShowPassword] = useState(false);
+        
+        const [countries, setCountries] = useState<Country[]>([]);
+        const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+        const [phone, setPhone] = useState('');
+        const [modalVisible, setModalVisible] = useState(false);
+
+        useEffect(() => {
+            const loadCountries = async () => {
+            try {
+                const data = await fetchCountries();
+                setCountries(data);
+                setSelectedCountry(data.find(c => c.code === 'IN') || data[0]);
+            } catch (error) {
+                console.error(error);
+            }};
+            loadCountries();
+        }, []);
 
         const handleResgister = async () => {
             if (!firstName){
@@ -89,12 +106,43 @@ export default function Signup (){
                 onChangeText={setEmail}
                 style={styles.input}
             />
-            <TextInput
-                placeholder="Phone"
-                value={phone}
-                onChangeText={setPhone}
-                style={styles.input}
-            />
+            <View style={styles.phoneContainer}>
+                <Pressable style={styles.selector} onPress={() => setModalVisible(true)}>
+                    {selectedCountry && (
+                    <>
+                        <Image source={{ uri: selectedCountry.flag }} style={styles.flag} />
+                        <Text>{selectedCountry.name} ({selectedCountry.dialCode})</Text>
+                    </>
+                    )}
+                </Pressable>
+                <TextInput
+                    // eslint-disable-next-line no-sparse-arrays, react-native/no-inline-styles
+                    style={[styles.phoneInput, , { flex: 0.6, marginLeft: 8 }]}
+                    keyboardType="phone-pad"
+                    placeholder="Enter phone number"
+                    value={phone}
+                    onChangeText={setPhone}
+                />
+                <Modal visible={modalVisible} animationType="slide">
+                    <FlatList
+                        data={countries}
+                        keyExtractor={(item) => item.code}
+                        style={styles.list}
+                        renderItem={({ item }) => (
+                            <Pressable
+                                style={styles.countryItem}
+                                onPress={() => {
+                                    setSelectedCountry(item);
+                                    setModalVisible(false);
+                                }}
+                            >
+                            <Image source={{ uri: item.flag }} style={styles.flag} />
+                            <Text>{item.name} ({item.dialCode})</Text>
+                            </Pressable>
+                        )}
+                    />
+                </Modal>
+                </View>
             <View style={styles.passwordContainer}>
                 <TextInput
                     placeholder="Password"
