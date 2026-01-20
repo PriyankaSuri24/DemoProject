@@ -12,9 +12,4 @@ export const styles = StyleSheet.create ({
         fontWeight : 'bold',
         color: '#fff',
     },
-    logout: {
-        fontSize : 15,
-        fontWeight : 'bold',
-        color: '#fff',
-    }
 })
