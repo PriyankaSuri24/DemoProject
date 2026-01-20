@@ -1,38 +1,16 @@
-/* eslint-disable react/no-unstable-nested-components */
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Home from "../app/Home";
-import Greeting from "../app/Greeting";
-import { HomeHeaderRight } from "../app/HomeHeaderRight";
-import AppSettings from "../app/AppSettings";
+import BottomTabsNavigator from "./BottomTabs";
 
-const stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function AppStack() {
     return (
-        <stack.Navigator
-            screenOptions = {{ 
-                headerStyle: {
-                    backgroundColor: '#af45d9',
-                },
-                headerTintColor: '#fff',
-                headerTitleAlign: 'center',
-                headerTitleStyle: {
-                fontWeight: 'bold',
-                },
-            }}
-        >
-            <stack.Screen 
-                name="Home" 
-                component={Home} 
-                options={{
-                    headerTitle: () => <Greeting/>,
-                    headerRight: () => <HomeHeaderRight/>
-                }}
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+            <Stack.Screen
+                name = "MainTabs"
+                component={BottomTabsNavigator}
+                options={{headerShown:false}}
             />
-            <stack.Screen 
-                name="AppSettings" 
-                component={AppSettings} 
-            />
-        </stack.Navigator>
+        </Stack.Navigator>
     );
-}
+} 
