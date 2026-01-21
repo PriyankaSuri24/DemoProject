@@ -1,6 +1,6 @@
 import { AuthProvider } from './android/app/src/context/authContext';
 import RootNavigator from './android/app/src/navigation/RootNavigator';
-
+import 'react-native-gesture-handler';
 
 export default function App() {
   return (
