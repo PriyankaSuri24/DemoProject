@@ -8,6 +8,7 @@ export const LightNavTheme: NavigationTheme = {
     card: '#af45d9',
     text: '#fff',
     border: '#af45d9',
+    primary: '#c26ce4',
   },
 };
 
@@ -19,5 +20,6 @@ export const BlueDarkNavTheme: NavigationTheme = {
     card: '#0420be',
     text: '#fff',
     border: '#0420be',
+    primary: '#542de2',
   },
 };
