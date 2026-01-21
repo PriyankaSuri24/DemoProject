@@ -1,15 +1,21 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Signup from "../auth/Signup";
 import Login from "../auth/Login";
+import { useContext } from "react";
+import { ThemeContext } from "../context/ThemeContext";
+import { BlueDarkNavTheme, LightNavTheme } from "../theme/appThemes";
 
 const stack = createNativeStackNavigator();
 
 export default function AuthStack() {
+    const { theme } = useContext(ThemeContext);
+    const colors = theme === "light" ? LightNavTheme.colors : BlueDarkNavTheme.colors;
+
     return (
         <stack.Navigator 
             screenOptions = {{ 
                 headerStyle: {
-                    backgroundColor: '#af45d9',
+                    backgroundColor: colors.card,
                 },
                 headerTintColor: '#fff',
                 headerTitleAlign: 'center',
