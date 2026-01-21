@@ -1,9 +1,9 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Home from "../app/Home";
-import Greeting from "../app/Greeting";
-import { HomeHeaderRight } from "../app/HomeHeaderRight";
-import { AppSettings } from "../app/AppSettings";
+import Home from "../screens/home/Home";
+import Greeting from "../screens/home/Greeting";
+import { HomeHeaderRight } from "../screens/home/HomeHeaderRight";
+import { AppSettings } from "../screens/home/AppSettings";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { LightNavTheme, BlueDarkNavTheme } from "../theme/appThemes";
