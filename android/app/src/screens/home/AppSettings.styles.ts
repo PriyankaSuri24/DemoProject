@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
-import { LightNavTheme, BlueDarkNavTheme } from "../theme/appThemes";
-import { ThemeContext } from "../context/ThemeContext";
+import { LightNavTheme, BlueDarkNavTheme } from "../../theme/appThemes";
+import { ThemeContext } from "../../context/ThemeContext";
 import { useContext } from "react";
 
 export const useStyles = () => {

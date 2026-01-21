@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { View, Text, Switch, Pressable } from 'react-native';
-import { LightNavTheme, BlueDarkNavTheme } from '../theme/appThemes';
-import { ThemeContext } from '../context/ThemeContext';
+import { LightNavTheme, BlueDarkNavTheme } from '../../theme/appThemes';
+import { ThemeContext } from '../../context/ThemeContext';
 import { useStyles } from './AppSettings.styles';
-import { AuthContext } from '../context/authContext';
+import { AuthContext } from '../../context/authContext';
 
 export const AppSettings = () => {
   const { theme, setTheme } = useContext(ThemeContext);

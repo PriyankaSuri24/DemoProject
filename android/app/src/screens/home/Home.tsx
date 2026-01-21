@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native';
-import { useStyles } from '../Home.styles';
+import { useStyles } from '../home/Home.styles';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Home (){

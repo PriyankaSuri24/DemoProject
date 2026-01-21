@@ -1,5 +1,5 @@
 import { Text } from "react-native";
-import { styles } from './Greetings.styles';
+import { styles } from '././Greetings.styles';
 
 export default function Greeting(){
     const hour = new Date().getHours();
