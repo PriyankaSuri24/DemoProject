@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
-import { Pressable } from "react-native";
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Pressable} from "react-native";
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 type rootStack = {
     Home: undefined,
@@ -16,7 +16,10 @@ export const HomeHeaderRight = () => {
             // eslint-disable-next-line react-native/no-inline-styles
             style={{ marginRight: 12 }}
         >
-            <Icon name="settings-sharp" size={22} color="#dbaaef"/>
+            <FontAwesome
+                name = {'gear'}
+                size ={25}
+            />
         </Pressable>
     );
 }

@@ -3,12 +3,13 @@ import { AuthContext } from "../context/authContext";
 import { getUsers } from "../storage/userStorage";
 import { Alert, ScrollView, View, Text, Pressable, TextInput, Image, Modal, FlatList } from "react-native";
 import React from "react";
-import { styles } from './PhoneLogin.styles';
+import { useStyles } from './PhoneLogin.styles';
 import { fetchCountries, Country } from '../api/CallingApi';
 
 export default function PhoneLogin() {
     const { login } = useContext(AuthContext);
     const [password, setPassword] = useState('');
+    const styles = useStyles();
 
     const [countries, setCountries] = useState<Country[]>([]);
     const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
@@ -84,7 +85,7 @@ export default function PhoneLogin() {
                     style={styles.input}
                 />
                 <Pressable onPress={handleLogin} style={styles.loginButton}>
-                    <Text>Login</Text>
+                    <Text style={styles.loginButtonText}>Login</Text>
                 </Pressable>
             </View>
         </ScrollView>

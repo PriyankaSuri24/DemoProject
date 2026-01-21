@@ -4,12 +4,13 @@ import { getUsers } from "../storage/userStorage";
 import { validateEmail } from "../utils/validation";
 import { Alert, ScrollView, View, Text, Pressable, TextInput } from "react-native";
 import React from "react";
-import { styles } from './EmailLogin.styles';
+import { useStyles } from './EmailLogin.styles';
 
 export default function EmailLogin() {
     const { login } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const styles = useStyles();
 
     const handleLogin = async () => {
         const users = await getUsers();
@@ -39,7 +40,7 @@ export default function EmailLogin() {
                     style={styles.input}
                 />
                 <Pressable onPress={handleLogin} style={styles.loginButton}>
-                    <Text>Login</Text>
+                    <Text style={styles.loginButtonText}>Login</Text>
                 </Pressable>
             </View>
         </ScrollView>

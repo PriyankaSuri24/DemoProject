@@ -5,13 +5,14 @@ import { getUsers, saveUser } from '../storage/userStorage';
 import { validateEmail } from '../utils/validation';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { styles } from './Signup.styles';
+import { useStyles } from './Signup.styles';
 import { validatePassword } from '../utils/passwordValidation';
 import { fetchCountries, Country } from '../api/CallingApi';
 
 export default function Signup (){
         const { login } = useContext(AuthContext);
         const navigation = useNavigation<any>();
+        const styles = useStyles();
 
         const [firstName, setFirstName] = useState('');
         const [lastName, setLastName] = useState('');

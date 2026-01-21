@@ -1,10 +1,10 @@
 import { View, Text, Pressable } from 'react-native';
-import { styles } from './Home.styles';
+import { useStyles } from './Home.styles';
 import { useNavigation } from '@react-navigation/native';
-
 
 export default function Home (){
     const navigation = useNavigation();
+    const styles = useStyles();
     return (
         <View style={styles.container}>
             <Pressable
