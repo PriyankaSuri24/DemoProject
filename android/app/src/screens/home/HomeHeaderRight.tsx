@@ -17,7 +17,7 @@ export const HomeHeaderRight = () => {
             // eslint-disable-next-line react-native/no-inline-styles
             style={{ marginRight: 12 }}
         >
-            <FontAwesome name="cog" size={25} color="#dbaaef" /> 
+            <FontAwesome name="cog" size={25} color="#fff" /> 
         </Pressable>
     );
 }
