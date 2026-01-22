@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Task } from "../../types/task";
 import { getTasks, toggleTaskStatus } from "../../storage/taskStorage";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Modal, Pressable, Text, View, ScrollView } from "react-native";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { useStyles } from "./TaskListScreen.styles";
 import { formatDate } from "../../utils/dateFormatter";
@@ -17,6 +17,8 @@ export default function TaskListScreen() {
     const styles = useStyles();
 
     const [groupedTasks, setGroupedTasks] = useState<GroupedTasks>({});
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         loadTasks();
@@ -46,53 +48,64 @@ export default function TaskListScreen() {
         loadTasks();
     };
 
+    const handleTaskPress = async (task: Task) => {
+        setSelectedTask(task);
+        setModalVisible(true);
+    }
+
     const renderTaskRow = (task: Task, checked: boolean) => (
-        <View key={task.id} style={styles.taskDataRow}>
-            <Pressable
-                onPress={() => handleToggle(task)}
-                style={styles.checkboxContainer}
-            >
-                <Text style={styles.checkbox}>{checked ? "✔" : "☐"}</Text>
-            </Pressable>
-
-            <View style={styles.dataTopContainer}>
-                <View style={styles.taskData}>
-                    {task.title ? (
-                        <Text style={styles.title} numberOfLines={1}>
-                            {task.title}:
-                        </Text>
-                    ) : null}
-
-                    <Text
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                        style={styles.description}
-                    >
-                        {task.description}
-                    </Text>
-                </View>
-
-                {!checked && (
-                    <Pressable
-                        style={styles.editButtonContainer}
-                        onPress={() =>
-                            navigation.navigate("AddEditTask", {
-                                taskId: task.id,
-                            })
-                        }
-                    >
-                        <Text style={styles.editButtonText}>Edit</Text>
-                    </Pressable>
-                )}
-
-                <Pressable 
-                    onPress={() => confirmDeleteTask(task.id, loadTasks)}
-                    style={styles.editButtonContainer}
+        <Pressable
+            key = {task.id}
+            onPress={() => handleTaskPress(task)}
+            style={styles.taskDataRowView}
+        >
+            <View key={task.id} style={styles.taskDataRow}>
+                <Pressable
+                    onPress={() => handleToggle(task)}
+                    style={styles.checkboxContainer}
                 >
-                    <Text style={styles.editButtonText}>Delete</Text>
+                    <Text style={styles.checkbox}>{checked ? "✔" : "☐"}</Text>
                 </Pressable>
+
+                <View style={styles.dataTopContainer}>
+                    <View style={styles.taskData}>
+                        {task.title ? (
+                            <Text style={styles.title} numberOfLines={1}>
+                                {task.title}:
+                            </Text>
+                        ) : null}
+
+                        <Text
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                            style={styles.description}
+                        >
+                            {task.description}
+                        </Text>
+                    </View>
+
+                    {!checked && (
+                        <Pressable
+                            style={styles.editButtonContainer}
+                            onPress={() =>
+                                navigation.navigate("AddEditTask", {
+                                    taskId: task.id,
+                                })
+                            }
+                        >
+                            <Text style={styles.editButtonText}>Edit</Text>
+                        </Pressable>
+                    )}
+
+                    <Pressable 
+                        onPress={() => confirmDeleteTask(task.id, loadTasks)}
+                        style={styles.editButtonContainer}
+                    >
+                        <Text style={styles.editButtonText}>Delete</Text>
+                    </Pressable>
+                </View>
             </View>
-        </View>
+        </Pressable>
     );
 
     return (
@@ -158,6 +171,67 @@ export default function TaskListScreen() {
                     );
                 }}
             />
+
+            <Modal
+                visible={modalVisible}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+                        {/* eslint-disable-next-line react-native/no-inline-styles */}
+                        <ScrollView contentContainerStyle={{padding: 20}}>
+                            <Text style={styles.modalTitle}>
+                                {selectedTask?. title || "No Title"}
+                            </Text>
+                            <View style={styles.modalButtonRow}>
+                                <Pressable 
+                                    style={styles.editButtonContainer}
+                                    onPress={() => {
+                                        setModalVisible(false)
+                                        navigation.navigate("AddEditTask", {
+                                            taskId: selectedTask?.id,
+                                        });
+                                    }}
+                                >
+                                    <Text style={styles.editButtonText}>
+                                        Edit
+                                    </Text>
+                                </Pressable>
+                                <Pressable 
+                                    style={styles.editButtonContainer}
+                                    onPress={() => {
+                                        selectedTask &&
+                                        confirmDeleteTask(selectedTask.id , () => {
+                                            setModalVisible(false);
+                                            loadTasks();
+                                        });
+                                    }}
+                                >
+                                    <Text style={styles.editButtonText}>
+                                        Delete
+                                    </Text>
+                                </Pressable>
+                            </View>
+                            <View style={styles.modalDivider}/>
+                            <Text style={styles.modalDescription}>
+                                {selectedTask?.description}
+                            </Text>
+                        </ScrollView>
+                        <Pressable
+                            style={styles.modalCloseButton}
+                            onPress={() => {
+                                setModalVisible(false);
+                            }}
+                        >
+                            <Text style={styles.editButtonText}>
+                                Close
+                            </Text>
+                        </Pressable>
+                    </View>
+                </View>   
+            </Modal>
         </View>
     );
 }

@@ -97,6 +97,48 @@ export const useStyles = () => {
             backgroundColor: "#fff",
             opacity: 0.4,
             marginBottom: 8,
+        },
+        taskDataRowView: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 10,
+        },
+        modalOverlay: {
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        modalContainer: {
+            width: "90%",
+            maxHeight: "80%",
+            backgroundColor: colors.primary,
+            borderRadius: 12,
+            overflow: "hidden",
+        },
+        modalTitle: {
+            fontSize: 22,
+            fontWeight: "600",
+            color: "#fff",
+        },
+        modalButtonRow: {
+            flexDirection: "row",
+            justifyContent: "flex-end",
+        },
+        modalDivider: {
+            height: 1,
+            backgroundColor: "#ccc",
+            marginVertical: 10,
+        },
+        modalDescription: {
+            fontSize: 18,
+            marginTop: 10,
+            color: "#fff",
+        },
+        modalCloseButton: {
+            padding: 12,
+            backgroundColor: colors.background,
+            alignItems: "center",
         }
     });
 };
