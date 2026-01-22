@@ -10,6 +10,7 @@ import { TaskFilter } from "../../types/taskFilter";
 import { ThemeContext } from "../../context/ThemeContext";
 import { BlueDarkNavTheme, LightNavTheme } from "../../theme/appThemes";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 type GroupedTasks = {
     [date: string]: Task[];
@@ -145,7 +146,7 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: props) {
                                 })
                             }
                         >
-                            <Text style={styles.editButtonText}>Edit</Text>
+                            <FontAwesome name="pencil" size={25} color="#fff" />
                         </Pressable>
                     )}
 
@@ -153,7 +154,7 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: props) {
                         onPress={() => confirmDeleteTask(task.id, loadTasks)}
                         style={styles.editButtonContainer}
                     >
-                        <Text style={styles.editButtonText}>Delete</Text>
+                        <FontAwesome name="trash" size={25} color="#fff" />
                     </Pressable>
                 </View>
             </View>
@@ -187,7 +188,7 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: props) {
                                         onPress={() => navigation.navigate("AddEditTask")}
                                         style={styles.filterButtonContainer}
                                     >
-                                        <Text style={styles.filterButtonText}>+</Text>
+                                        <FontAwesome name="plus" size={25} color="#fff" /> 
                                     </Pressable>
 
                                     <Pressable
@@ -197,7 +198,7 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: props) {
                                         }}
                                         style={styles.addButtonContainer}
                                     >
-                                        <Text style={styles.addButtonText}>⦿─</Text>
+                                        <FontAwesome name="filter" size={25} color="#fff" />
                                     </Pressable>
                                 </View>
                             </View>
@@ -259,9 +260,7 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: props) {
                                         });
                                     }}
                                 >
-                                    <Text style={styles.editButtonText}>
-                                        Edit
-                                    </Text>
+                                    <FontAwesome name="pencil" size={25} color="#fff" />
                                 </Pressable>
                                 <Pressable 
                                     style={styles.editButtonContainer}
@@ -273,9 +272,7 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: props) {
                                         });
                                     }}
                                 >
-                                    <Text style={styles.editButtonText}>
-                                        Delete
-                                    </Text>
+                                    <FontAwesome name="trash" size={25} color="#fff" />
                                 </Pressable>
                             </View>
                             <View style={styles.modalDivider}/>
