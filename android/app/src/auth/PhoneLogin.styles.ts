@@ -76,14 +76,11 @@ export const useStyles = () => {
             opacity: 0.3,
         },
         input: {
-            marginHorizontal: 20,
-            marginVertical: 8,
-            padding: 14,
+            flex: 1,
             fontSize: 16,
-            backgroundColor: '#fff',
-            borderRadius: 10,
-            borderWidth: 1,
-            borderColor: colors.card,
+            paddingVertical: 12,
+            paddingRight: 8,
+            color: '#000',
         },
         loginButton: {
             marginTop: 20,
@@ -97,5 +94,16 @@ export const useStyles = () => {
             color: "#fff",
             fontSize: 18,
         },
+        passwordContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginHorizontal: 20,
+            marginVertical: 8,
+            backgroundColor: '#fff',
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: colors.card,
+            paddingHorizontal: 12,
+        }
     });
 };

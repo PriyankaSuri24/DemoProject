@@ -5,10 +5,12 @@ import { Alert, ScrollView, View, Text, Pressable, TextInput, Image, Modal, Flat
 import React from "react";
 import { useStyles } from './PhoneLogin.styles';
 import { fetchCountries, Country } from '../api/CallingApi';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function PhoneLogin() {
     const { login } = useContext(AuthContext);
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const styles = useStyles();
 
     const [countries, setCountries] = useState<Country[]>([]);
@@ -77,13 +79,22 @@ export default function PhoneLogin() {
                         />
                     </Modal>
                 </View>
-                <TextInput
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    style={styles.input}
-                />
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        placeholder="Password"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                        style={styles.input}
+                    />
+                    <Pressable onPress={() => setShowPassword(!showPassword)}>
+                        <Icon
+                            name={showPassword ? 'eye-sharp' : 'eye-off-sharp'}
+                            size={22}
+                            color="#af45d9"
+                        />
+                    </Pressable>
+                </View>
                 <Pressable onPress={handleLogin} style={styles.loginButton}>
                     <Text style={styles.loginButtonText}>Login</Text>
                 </Pressable>

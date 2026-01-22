@@ -5,11 +5,13 @@ import { validateEmail } from "../utils/validation";
 import { Alert, ScrollView, View, Text, Pressable, TextInput } from "react-native";
 import React from "react";
 import { useStyles } from './EmailLogin.styles';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function EmailLogin() {
     const { login } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const styles = useStyles();
 
     const handleLogin = async () => {
@@ -32,13 +34,22 @@ export default function EmailLogin() {
                     keyboardType="email-address"
                     style={styles.input}
                 />
-                <TextInput
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    style={styles.input}
-                />
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        placeholder="Password"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                        style={styles.passwrodInput}
+                    />
+                    <Pressable onPress={() => setShowPassword(!showPassword)}>
+                        <Icon
+                            name={showPassword ? 'eye-sharp' : 'eye-off-sharp'}
+                            size={22}
+                            color="#af45d9"
+                        />
+                    </Pressable>
+                </View>
                 <Pressable onPress={handleLogin} style={styles.loginButton}>
                     <Text style={styles.loginButtonText}>Login</Text>
                 </Pressable>
