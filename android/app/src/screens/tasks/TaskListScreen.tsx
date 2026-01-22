@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState} from "react";
 import { Task } from "../../types/task";
 import { getTasks, toggleTaskStatus } from "../../storage/taskStorage";
 import { FlatList, Modal, Pressable, Text, View, ScrollView } from "react-native";
@@ -6,12 +6,21 @@ import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { useStyles } from "./TaskListScreen.styles";
 import { formatDate } from "../../utils/dateFormatter";
 import { confirmDeleteTask } from "../../storage/deleteTask";
+import { TaskFilter } from "../../types/taskFilter";
+import { ThemeContext } from "../../context/ThemeContext";
+import { BlueDarkNavTheme, LightNavTheme } from "../../theme/appThemes";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 type GroupedTasks = {
     [date: string]: Task[];
 };
 
-export default function TaskListScreen() {
+type props = {
+    taskFilter: TaskFilter,
+    setTaskFilter: React.Dispatch<React.SetStateAction<TaskFilter>>
+}
+
+export default function TaskListScreen({ taskFilter, setTaskFilter }: props) {
     const navigation = useNavigation<any>();
     const isFocused = useIsFocused();
     const styles = useStyles();
@@ -19,29 +28,71 @@ export default function TaskListScreen() {
     const [groupedTasks, setGroupedTasks] = useState<GroupedTasks>({});
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [filterModalVisible, setFilterModalVisible] = useState(false);
+    const [showFromPicker, setShowFromPicker] = useState(false);
+    const [showToPicker, setShowToPicker] = useState(false);
+
+    const { theme } = useContext(ThemeContext);
+    const colors = theme === "light" ? LightNavTheme.colors : BlueDarkNavTheme.colors;
+
+
+    const getTodayRange = () => {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+        return { from: start.getTime(), to: end.getTime() };
+    };
+
+    useEffect(() => {
+        if (!taskFilter.dateRange.from && !taskFilter.dateRange.to) {
+            setTaskFilter(prev => ({ ...prev, dateRange: getTodayRange() }));
+        }
+    }, []);
 
     useEffect(() => {
         loadTasks();
-    }, [isFocused]);
+    }, [isFocused, taskFilter]);
 
     const loadTasks = async () => {
-        const tasks = await getTasks();
+    let tasks = await getTasks();
 
-        tasks.sort((a, b) => {
-            if (a.isCompleted === b.isCompleted) return 0;
-            return a.isCompleted ? 1 : -1;
+    if (taskFilter.status === "COMPLETE") {
+            tasks = tasks.filter(t => t.isCompleted);
+    } else if (taskFilter.status === "PENDING") {
+            tasks = tasks.filter(t => !t.isCompleted);
+    }
+    if (taskFilter.priority.length > 0) {
+        tasks = tasks.filter(t => taskFilter.priority.includes(t.priority));
+    }
+    if (taskFilter.dateRange.from || taskFilter.dateRange.to) {
+        tasks = tasks.filter(t => {
+            const taskDate = new Date(t.date + "T00:00:00");
+            const taskTime = taskDate.getTime();
+
+            if (
+                taskFilter.dateRange.from !== null &&
+                taskTime < taskFilter.dateRange.from
+            ) return false;
+
+            if (
+                taskFilter.dateRange.to !== null &&
+                taskTime > taskFilter.dateRange.to
+            ) return false;
+
+            return true;
         });
+    }
 
-        const grouped: GroupedTasks = {};
-        tasks.forEach(task => {
-            if (!grouped[task.date]) {
-                grouped[task.date] = [];
-            }
-            grouped[task.date].push(task);
-        });
+    tasks.sort((a, b) => (a.isCompleted === b.isCompleted ? 0 : a.isCompleted ? 1 : -1));
+    const grouped: GroupedTasks = {};
+    tasks.forEach(task => {
+        if (!grouped[task.date]) grouped[task.date] = [];
+        grouped[task.date].push(task);
+    });
+    setGroupedTasks(grouped);
+};
 
-        setGroupedTasks(grouped);
-    };
 
     const handleToggle = async (task: Task) => {
         await toggleTaskStatus(task.id);
@@ -61,6 +112,7 @@ export default function TaskListScreen() {
         >
             <View key={task.id} style={styles.taskDataRow}>
                 <Pressable
+        
                     onPress={() => handleToggle(task)}
                     style={styles.checkboxContainer}
                 >
@@ -122,20 +174,32 @@ export default function TaskListScreen() {
                     const high = pending.filter(t => t.priority === "HIGH");
                     const medium = pending.filter(t => t.priority === "MEDIUM");
                     const low = pending.filter(t => t.priority === "LOW");
-
                     return (
                         <View style={styles.dateContainer}>
                             <View style={styles.addContainer}>
                                 <Text style={styles.date}>
                                     {formatDate(date)}
                                 </Text>
+                                
+                                <View style={styles.buttonContainer}>
+                                    <Pressable
+                                  
+                                        onPress={() => navigation.navigate("AddEditTask")}
+                                        style={styles.filterButtonContainer}
+                                    >
+                                        <Text style={styles.filterButtonText}>+</Text>
+                                    </Pressable>
 
-                                <Pressable
-                                    onPress={() => navigation.navigate("AddEditTask")}
-                                    style={styles.addButtonContainer}
-                                >
-                                    <Text style={styles.addButtonText}>+</Text>
-                                </Pressable>
+                                    <Pressable
+                                        onPress={() => {
+                                            setFilterModalVisible(true);
+                                            loadTasks();
+                                        }}
+                                        style={styles.addButtonContainer}
+                                    >
+                                        <Text style={styles.addButtonText}>⦿─</Text>
+                                    </Pressable>
+                                </View>
                             </View>
                             {high.length > 0 && (
                                 <>
@@ -205,7 +269,7 @@ export default function TaskListScreen() {
                                         selectedTask &&
                                         confirmDeleteTask(selectedTask.id , () => {
                                             setModalVisible(false);
-                                            loadTasks();
+                                            
                                         });
                                     }}
                                 >
@@ -232,6 +296,198 @@ export default function TaskListScreen() {
                     </View>
                 </View>   
             </Modal>
+            <Modal
+                visible = {filterModalVisible}
+                animationType= "slide"
+                transparent = {true}
+                onRequestClose={() => setFilterModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style = {styles.modalContainer}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Text style={styles.modalTitle}>Filter Tasks</Text>
+                            <Pressable
+                                onPress={() => {
+                                    setTaskFilter({
+                                        status: "ALL",
+                                        priority: [],
+                                        dateRange: getTodayRange(),
+                                    });
+                                    loadTasks();
+                                }}
+                                style={{
+                                    padding: 6,
+                                    backgroundColor: colors.background,
+                                    borderRadius: 6,
+                                }}
+                            >
+                                <Text style={{ color: "#fff", fontSize:10 }}>Clear</Text>
+                            </Pressable>
+                        </View>
+                        {/* eslint-disable-next-line react-native/no-inline-styles */}
+                        <View style = {{ marginVertical: 10 }}>
+                            <Text style={styles.statusTitle}>Status:</Text>
+                            {/* eslint-disable-next-line react-native/no-inline-styles */}
+                            <View style = {{ flexDirection: 'row', flexWrap: 'wrap', gap: 8   }}>
+                                {["ALL", "PENDING", "COMPLETED"].map(status => (
+                                    <Pressable
+                                        key={status}
+                                        onPress={() =>
+                                            setTaskFilter(prev => ({ ...prev, status: status as any }))
+                                        }
+                                        // eslint-disable-next-line react-native/no-inline-styles
+                                        style={{
+                                            padding: 10,
+                                            backgroundColor:
+                                                taskFilter.status === status ? colors.background: colors.notification,
+                                            marginVertical: 4,
+                                            borderRadius: 6,
+                                        }}
+                                    >
+                                        <Text style={styles.status}>{status}</Text>
+                                    </Pressable>
+                                ))}
+                            </View>
+                        </View>
+                        <View style={{ marginVertical: 10 }}>
+                            <Text style={styles.statusTitle}>Priority:</Text>
+                            <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+                                {["HIGH", "MEDIUM", "LOW"].map(priority => {
+                                    const isSelected = taskFilter.priority.includes(priority as any);
+
+                                    return (
+                                        <Pressable
+                                            key={priority}
+                                            onPress={() => {
+                                                setTaskFilter(prev => ({
+                                                    ...prev,
+                                                    priority: isSelected
+                                                        ? prev.priority.filter(p => p !== priority)
+                                                        : [...prev.priority, priority as any],
+                                                }));
+                                            }}
+                                            style={{
+                                                padding: 10,
+                                                borderRadius: 6,
+                                                backgroundColor: isSelected
+                                                    ? colors.background
+                                                    : colors.notification,
+                                            }}
+                                        >
+                                            <Text style={styles.status}>{priority}</Text>
+                                        </Pressable>
+                                    );
+                                })}
+                            </View>
+                        </View>
+                        <View style={{ marginVertical: 10 }}>
+                            <Text style={styles.statusTitle}>Date Range:</Text>
+                            <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+                                <Pressable
+                                    onPress={() => setShowFromPicker(true)}
+                                    style={{
+                                        padding: 10,
+                                        backgroundColor: colors.notification,
+                                        borderRadius: 6,
+                                    }}
+                                >
+                                    <Text style={styles.status}>
+                                        From:{" "}
+                                        {taskFilter.dateRange.from
+                                            ? new Date(taskFilter.dateRange.from).toDateString()
+                                            : "Select Date"}
+                                    </Text>
+                                </Pressable>
+                                <Pressable
+                                    onPress={() => setShowToPicker(true)}
+                                    style={{
+                                        padding: 10,
+                                        backgroundColor: colors.notification,
+                                        borderRadius: 6,
+                                    }}
+                                >
+                                    <Text style={styles.status}>
+                                        To:{" "}
+                                        {taskFilter.dateRange.to
+                                            ? new Date(taskFilter.dateRange.to).toDateString()
+                                            : "Select Date"}
+                                    </Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                        <Pressable
+                            onPress={() => {
+                                setFilterModalVisible(false)
+                                loadTasks();
+                            }}
+                            // eslint-disable-next-line react-native/no-inline-styles
+                            style={{
+                                marginTop: 20,
+                                padding: 12,
+                                backgroundColor: colors.background,
+                                borderRadius: 6,
+                                alignItems: "center",
+                            }}
+                        >
+                            {/* eslint-disable-next-line react-native/no-inline-styles */}
+                            <Text style={{ color: "#fff" }}>Apply</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </Modal>
+            {showFromPicker && (
+                <DateTimePicker
+                    value={
+                        taskFilter.dateRange.from
+                            ? new Date(taskFilter.dateRange.from)
+                            : new Date()
+                    }
+                    mode="date"
+                    display="default"
+                    onChange={(event, date) => {
+                        setShowFromPicker(false);
+                        if (!date) return;
+
+                        const startOfDay = new Date(date);
+                        startOfDay.setHours(0, 0, 0, 0);
+
+                        setTaskFilter(prev => ({
+                            ...prev,
+                            dateRange: {
+                                ...prev.dateRange,
+                                from: startOfDay.getTime(),
+                            },
+                        }));
+                    }}
+                />
+            )}
+
+            {showToPicker && (
+                <DateTimePicker
+                    value={
+                        taskFilter.dateRange.to
+                            ? new Date(taskFilter.dateRange.to)
+                            : new Date()
+                    }
+                    mode="date"
+                    display="default"
+                    onChange={(event, date) => {
+                        setShowToPicker(false);
+                        if (!date) return;
+
+                        const endOfDay = new Date(date);
+                        endOfDay.setHours(23, 59, 59, 999);
+
+                        setTaskFilter(prev => ({
+                            ...prev,
+                            dateRange: {
+                                ...prev.dateRange,
+                                to: endOfDay.getTime(),
+                            },
+                        }));
+                    }}
+                />
+            )}
         </View>
     );
 }

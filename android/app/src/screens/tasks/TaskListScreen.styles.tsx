@@ -38,6 +38,23 @@ export const useStyles = () => {
             flexDirection: 'row',
             justifyContent: 'space-between'
         },
+        buttonContainer: {
+            flexDirection: 'row',
+            gap: 10,
+        },
+        filterButtonContainer: {
+            width: 52,
+            height: 52,
+            borderRadius: 16,
+            backgroundColor: colors.card,
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        filterButtonText: {
+            color: "#fff",
+            fontSize: 30,
+            fontWeight: "bold",
+        },
         addButtonContainer: {
             width: 52,
             height: 52,
@@ -48,7 +65,7 @@ export const useStyles = () => {
         },
         addButtonText: {
             color: "#fff",
-            fontSize: 30,
+            fontSize: 20,
             fontWeight: "bold",
         },
         taskDataRow:{
@@ -115,6 +132,7 @@ export const useStyles = () => {
             backgroundColor: colors.primary,
             borderRadius: 12,
             overflow: "hidden",
+            padding: 10,
         },
         modalTitle: {
             fontSize: 22,
@@ -139,6 +157,15 @@ export const useStyles = () => {
             padding: 12,
             backgroundColor: colors.background,
             alignItems: "center",
+        }, 
+        statusTitle: {
+            color: "#fff",
+            fontSize: 18,
+            marginBottom:5,
+        },
+        status: {
+            color: "#fff",
+            fontSize: 11,
         }
     });
 };
