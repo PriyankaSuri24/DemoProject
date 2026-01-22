@@ -9,6 +9,7 @@ export const LightNavTheme: NavigationTheme = {
     text: '#fff',
     border: '#af45d9',
     primary: '#c26ce4',
+    notification: "#ad66c9"
   },
 };
 
@@ -21,5 +22,6 @@ export const BlueDarkNavTheme: NavigationTheme = {
     text: '#fff',
     border: '#0420be',
     primary: '#542de2',
+    notification: "#626ab4"
   },
 };
