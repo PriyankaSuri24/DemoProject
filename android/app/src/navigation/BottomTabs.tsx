@@ -7,6 +7,7 @@ import TaskStack from "./TaskStack";
 import ExpenseStack from "./ExpenseStack";
 import HabitStack from "./HabitStack";
 import NotesStack from "./NotesStack";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const Tab = createBottomTabNavigator();
 
@@ -16,7 +17,7 @@ export default function BottomTabs() {
 
     return (
         <Tab.Navigator
-            screenOptions={{
+            screenOptions={ ({route}) => ( {
                 tabBarStyle: {
                     backgroundColor: colors.card,
                     borderTopColor: colors.border,
@@ -31,7 +32,31 @@ export default function BottomTabs() {
                     paddingBottom: 15,
                 },
                 headerTitleAlign: "center",
-            }}
+                // eslint-disable-next-line react/no-unstable-nested-components
+                tabBarIcon: ({ color, size }) => {
+                    let iconName: string = "";
+
+                    switch (route.name) {
+                        case "HomeTab":
+                            iconName = "home"; 
+                            break;
+                        case "TaskTab":
+                            iconName = "tasks"; 
+                            break;
+                        case "ExpenseTab":
+                            iconName = "money";
+                            break;
+                        case "NotesTab":
+                            iconName = "file-text"; 
+                            break;
+                        case "HabitTab":
+                            iconName = "check"; 
+                            break;
+                    }
+
+                    return <FontAwesome name={iconName} size={size} color={color} />;
+                },
+            })}
         >
             <Tab.Screen
                 name="HomeTab"
