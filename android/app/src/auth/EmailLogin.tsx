@@ -39,7 +39,7 @@ export default function EmailLogin() {
                         placeholder="Password"
                         value={password}
                         onChangeText={setPassword}
-                        secureTextEntry
+                        secureTextEntry={!showPassword}
                         style={styles.passwrodInput}
                     />
                     <Pressable onPress={() => setShowPassword(!showPassword)}>

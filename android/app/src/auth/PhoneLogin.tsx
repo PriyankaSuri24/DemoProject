@@ -84,7 +84,7 @@ export default function PhoneLogin() {
                         placeholder="Password"
                         value={password}
                         onChangeText={setPassword}
-                        secureTextEntry
+                        secureTextEntry={!showPassword}
                         style={styles.input}
                     />
                     <Pressable onPress={() => setShowPassword(!showPassword)}>
