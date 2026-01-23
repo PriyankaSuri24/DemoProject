@@ -15,6 +15,7 @@ export const useStyles = () => {
             padding: 20,
         },
         date: {
+            flex: 1,
             fontWeight: '600',
             marginBottom: 30,
             fontSize: 25,
@@ -36,11 +37,13 @@ export const useStyles = () => {
         },
         addContainer: {
             flexDirection: 'row',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            alignItems: "center",
         },
         buttonContainer: {
             flexDirection: 'row',
             gap: 10,
+            flexShrink: 0,
         },
         filterButtonContainer: {
             width: 52,
@@ -166,6 +169,12 @@ export const useStyles = () => {
         status: {
             color: "#fff",
             fontSize: 11,
+        },
+        emptyText: {
+            marginTop: 40,
+            textAlign: "center",
+            fontSize: 14,
+            color: "#fff",
         }
     });
 };

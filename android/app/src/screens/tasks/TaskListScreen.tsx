@@ -44,6 +44,28 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: Props) {
         return { from: start.getTime(), to: end.getTime() };
     };
 
+    const toDateKey = (time: number) => {
+        const d = new Date(time); 
+        const year = d.getFullYear(); 
+        const month = String(d.getMonth() + 1).padStart(2, "0"); 
+        const day = String(d.getDate()).padStart(2, "0"); 
+        return `${year}-${month}-${day}`; 
+    };
+
+    const getHeaderDateLabel = () => {
+        const { from, to } = taskFilter.dateRange;
+        const fromTime = from || Date.now();
+        const toTime = to || Date.now();
+
+        const fromKey = toDateKey(fromTime);
+        const toKey = toDateKey(toTime);
+
+        if (fromKey === toKey) {
+            return fromKey; 
+        }
+        return `${fromKey}–${toKey}`;
+    };
+
     useEffect(() => {
         if (!taskFilter.dateRange.from && !taskFilter.dateRange.to) {
             setTaskFilter(prev => ({ ...prev, dateRange: getTodayRange() }));
@@ -52,8 +74,17 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: Props) {
 
     const loadTasks = useCallback(async () => {
         let tasks = await getTasks();
-        if (taskFilter.status === "COMPLETE") tasks = tasks.filter(t => t.isCompleted);
-        else if (taskFilter.status === "PENDING") tasks = tasks.filter(t => !t.isCompleted);
+
+        console.log("RAW TASKS:", tasks.length);
+
+        if (taskFilter.status === "COMPLETE")
+        {
+            tasks = tasks.filter(t => t.isCompleted);
+            console.log("AFTER STATUS COMPLETE:", tasks.length);
+        }else if (taskFilter.status === "PENDING") {
+            tasks = tasks.filter(t => !t.isCompleted);
+            console.log("AFTER STATUS PENDING:", tasks.length);
+        }
 
         if (taskFilter.priority.length > 0) {
             tasks = tasks.filter(t => taskFilter.priority.includes(t.priority));
@@ -65,14 +96,28 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: Props) {
             if (taskFilter.dateRange.to && taskTime > taskFilter.dateRange.to) return false;
             return true;
         });
+
+        console.log("AFTER DATE FILTER:", tasks.length);
+
+
         tasks.sort((a, b) => (a.isCompleted === b.isCompleted ? 0 : a.isCompleted ? 1 : -1));
 
-        const grouped: GroupedTasks = {};
-        tasks.forEach(task => {
-            if (!grouped[task.date]) grouped[task.date] = [];
-            grouped[task.date].push(task);
+        console.log("TASKS BEFORE FILTER:", tasks);
+
+        tasks.forEach(t => {
+        console.log("TASK DATE:", t.date, new Date(t.date).getTime());
+        });
+
+
+        const grouped: Record<string, Task[]> = {};
+        tasks.forEach(t => {
+            const taskTime = t.date ? new Date(t.date).getTime() : Date.now();
+            const dateKey = toDateKey(taskTime);
+            if (!grouped[dateKey]) grouped[dateKey] = [];
+            grouped[dateKey].push(t);
         });
         setGroupedTasks(grouped);
+        console.log("GROUPED TASKS:", grouped);
     }, [taskFilter]);
 
     useEffect(() => {
@@ -83,12 +128,12 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: Props) {
         await toggleTaskStatus(task.id);
         loadTasks();
     };
-
+    
     const handleTaskPress = (task: Task) => {
         setSelectedTask(task);
         setModalVisible(true);
     };
-
+    console.log(" Task loaded: ",loadTasks);
     const renderTaskRow = (task: Task, checked: boolean) => (
         <Pressable
             key={task.id}
@@ -143,9 +188,37 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: Props) {
 
     return (
         <View style={styles.container}>
+            <View style={styles.dateContainer}>
+                <View style={styles.addContainer}>
+                    <Text style={styles.date}>{formatDate(getHeaderDateLabel())}</Text>
+                    <View style={styles.buttonContainer}>
+                        <Pressable
+                            onPress={() => navigation.navigate("AddEditTask")}
+                            style={styles.filterButtonContainer}
+                        >
+                            <FontAwesome name="plus" size={25} color="#fff" /> 
+                        </Pressable>
+
+                        <Pressable
+                            onPress={() => {
+                                setFilterModalVisible(true);
+                                loadTasks();
+                            }}
+                            style={styles.addButtonContainer}
+                        >
+                            <FontAwesome name="filter" size={25} color="#fff" />
+                        </Pressable>
+                    </View>
+                </View>
+            </View>
             <FlatList
                 data={Object.keys(groupedTasks)}
                 keyExtractor={(date) => date}
+                ListEmptyComponent={
+                    <Text style={styles.emptyText}>
+                    No tasks......
+                    </Text>
+                }
                 renderItem={({ item: date }) => {
                     const tasksForDate = groupedTasks[date];
                     const pending = tasksForDate.filter(t => !t.isCompleted);
@@ -156,28 +229,6 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: Props) {
 
                     return (
                         <View style={styles.dateContainer}>
-                            <View style={styles.addContainer}>
-                                <Text style={styles.date}>{formatDate(date)}</Text>
-                                <View style={styles.buttonContainer}>
-                                    <Pressable
-                                        onPress={() => navigation.navigate("AddEditTask")}
-                                        style={styles.filterButtonContainer}
-                                    >
-                                        <FontAwesome name="plus" size={25} color="#fff" /> 
-                                    </Pressable>
-
-                                    <Pressable
-                                        onPress={() => {
-                                            setFilterModalVisible(true);
-                                            loadTasks();
-                                        }}
-                                        style={styles.addButtonContainer}
-                                    >
-                                        <FontAwesome name="filter" size={25} color="#fff" />
-                                    </Pressable>
-                                </View>
-                            </View>
-
                             {high.length > 0 && (
                                 <>
                                     <Text style={styles.sectionHeader}>High PriorityTask</Text>
@@ -210,6 +261,7 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: Props) {
                     );
                 }}
             />
+
             <Modal
                 visible={modalVisible}
                 animationType="slide"
@@ -260,6 +312,7 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: Props) {
                     </View>
                 </View>   
             </Modal>
+
             <Modal
                 visible={filterModalVisible}
                 animationType="slide"
@@ -285,7 +338,7 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: Props) {
                             >
                                 {/* eslint-disable-next-line react-native/no-inline-styles */}
                                 <Text style={{ color: "#fff", fontSize:10 }}>Clear</Text>
-                            </Pressable>
+                            </Pressable> 
                         </View>
                         {/* eslint-disable-next-line react-native/no-inline-styles */}
                         <View style={{ marginVertical: 10 }}>
@@ -369,39 +422,41 @@ export default function TaskListScreen({ taskFilter, setTaskFilter }: Props) {
                         >
                             {/* eslint-disable-next-line react-native/no-inline-styles */}
                             <Text style={{ color: "#fff" }}>Apply</Text>
-                        </Pressable>
+                        </Pressable> 
                     </View>
                 </View>
             </Modal>
-            {showFromPicker && (
-                <DateTimePicker
-                    value={taskFilter.dateRange.from ? new Date(taskFilter.dateRange.from) : new Date()}
-                    mode="date"
-                    display="default"
-                    onChange={(event, date) => {
-                        setShowFromPicker(false);
-                        if (!date) return;
-                        const startOfDay = new Date(date);
-                        startOfDay.setHours(0,0,0,0);
-                        setTaskFilter(prev => ({ ...prev, dateRange: { ...prev.dateRange, from: startOfDay.getTime() } }));
-                    }}
-                />
-            )}
 
+
+            {showFromPicker && (
+            <DateTimePicker
+                value={taskFilter.dateRange.from ? new Date(taskFilter.dateRange.from) : new Date()}
+                mode="date"
+                display="default"
+                onChange={(event, date) => {
+                    setShowFromPicker(false);
+                    if (!date) return;
+                    const startOfDay = new Date(date);
+                    startOfDay.setHours(0, 0, 0, 0);
+                    setTaskFilter(prev => ({ ...prev, dateRange: { ...prev.dateRange, from: startOfDay.getTime() } }));
+                }}
+            /> 
+            )} 
             {showToPicker && (
-                <DateTimePicker
-                    value={taskFilter.dateRange.to ? new Date(taskFilter.dateRange.to) : new Date()}
-                    mode="date"
-                    display="default"
-                    onChange={(event, date) => {
-                        setShowToPicker(false);
-                        if (!date) return;
-                        const endOfDay = new Date(date);
-                        endOfDay.setHours(23,59,59,999);
-                        setTaskFilter(prev => ({ ...prev, dateRange: { ...prev.dateRange, to: endOfDay.getTime() } }));
-                    }}
-                />
+            <DateTimePicker
+                value={taskFilter.dateRange.to ? new Date(taskFilter.dateRange.to) : new Date()}
+                mode="date"
+                display="default"
+                onChange={(event, date) => {
+                    setShowToPicker(false);
+                    if (!date) return;
+                    const endOfDay = new Date(date);
+                    endOfDay.setHours(23, 59, 59, 999);
+                    setTaskFilter(prev => ({ ...prev, dateRange: { ...prev.dateRange, to: endOfDay.getTime() } }));
+                }}
+            />
             )}
         </View>
-    );
+
+    )
 }
